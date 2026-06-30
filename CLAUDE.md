@@ -4,14 +4,14 @@ Internal React + TypeScript app for browsing and debugging live agent conversati
 
 ## Stack
 
-- **Frontend:** React 18 / Vite 5 (port 7725)
-- **Backend:** Express 4 proxy to App Insights REST API (port 7726)
+- **Frontend:** React 18 / Vite 5 (port 3000)
+- **Backend:** Express 4 proxy to App Insights REST API (port 3001)
 
 ## Common Commands
 
 ```bash
 npm install        # first time only
-npm run dev        # starts Vite (:7725) + Express (:7726) concurrently
+npm run dev        # starts Vite (:3000) + Express (:3001) concurrently
 npm run build      # TypeScript compile (both tsconfigs) + Vite build
 ```
 
@@ -31,7 +31,7 @@ LOG_LEVEL="info"                    # debug | info | warn | error (default: info
 ├── server/
 │   ├── server.ts       # Express backend — proxies KQL queries to App Insights REST API
 │   └── logger.ts       # Structured JSON file logger with daily rotation and field masking
-├── vite.config.ts      # Vite config; root=app, /api/ proxied to Express (:7726)
+├── vite.config.ts      # Vite config; root=app, /api/ proxied to Express (:3001)
 ├── tsconfig.json       # Frontend (app/) + vite.config.ts
 ├── tsconfig.server.json# Backend (server/) — NodeNext module resolution
 ├── app/
@@ -120,3 +120,21 @@ The `⚙ Settings` button opens a centered panel (70vw) managed by `SettingsMenu
 - **Chat** — user/bot message bubbles; text (T) and voice (S) channels shown separately; AI-generated responses are badged.
 - **Execution Path** — groups events by `TopicStart`/`TopicEnd`; shows nested actions with Kind and ActionId; expandable context rows and raw JSON per action; detects interrupted topics.
 - **Errors** — lists all `OnErrorLog` events with full `customDimensions` JSON; links to the relevant step in Execution Path.
+
+## Git & PR Conventions
+
+Always include Claude as a co-author on every commit and PR:
+
+```
+Co-Authored-By: Claude <81847+claude@users.noreply.github.com>
+```
+
+This maps to [github.com/claude](https://github.com/claude) and makes Claude appear as a participant in GitHub PRs.
+
+## UI Design Guidelines
+
+**Always reuse existing patterns before creating new ones.** Before adding a new component or CSS class, search the codebase for an existing implementation. Key reusable patterns:
+
+- **Info tooltip** — use `.info-tooltip-wrap` / `.info-tooltip-btn` / `.info-tooltip-body` (defined in `index.css`, used in `ConversationDetail.tsx`). Opens downward, right-anchored, themed. Do not invent a new tooltip mechanism.
+- **Theme colours** — use CSS variables (`--accent`, `--success`, `--error`, `--text-muted`, etc.) defined in the `:root` / `[data-theme]` blocks at the top of `index.css`. Do not hardcode colours.
+- **Status dots** — `.activity-dot` (orange) and `.dep-dot` (green) for inline indicators.

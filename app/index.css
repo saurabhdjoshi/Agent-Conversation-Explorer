@@ -63,6 +63,8 @@
   --error-bg: #fef2f2;
   --error-border: #fecaca;
   --success: #10b981;
+  --success-bg: #f0fdf4;
+  --success-border: #86efac;
   --warning: #f59e0b;
 }
 
@@ -128,6 +130,8 @@
   --error-bg: #FFF6EE;
   --error-border: #EEC898;
   --success: #2E8B57;
+  --success-bg: #f0fdf4;
+  --success-border: #86efac;
   --warning: #C07800;
 }
 
@@ -1298,6 +1302,92 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
 
 /* ─── Tabs ───────────────────────────────────────────────────────────────── */
 
+.tabs-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  background: var(--detail-header-bg);
+  transition: background-color 0.25s ease;
+  flex-shrink: 0;
+}
+.tabs-row > .tabs { flex: 1; border-bottom: none; background: none; transition: none; }
+
+.activity-details-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+}
+.activity-details-checkbox input { accent-color: var(--accent); cursor: pointer; }
+
+.info-tooltip-wrap { position: relative; display: inline-flex; align-items: center; }
+
+.info-tooltip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--text-muted);
+  background: none;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--text-muted);
+  cursor: help;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.info-tooltip-btn:hover,
+.info-tooltip-btn:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.info-tooltip-body {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  font-weight: 400;
+  font-style: normal;
+  cursor: default;
+  white-space: normal;
+  word-break: break-word;
+}
+.info-tooltip-wrap:hover .info-tooltip-body,
+.info-tooltip-wrap:focus-within .info-tooltip-body {
+  opacity: 1;
+  visibility: visible;
+}
+/* Left-anchored variant — tooltip extends rightward, for triggers near the left viewport edge */
+.info-tooltip-wrap.tip-right .info-tooltip-body { right: auto; left: 0; }
+/* Portal variant: rendered in document.body via React portal, escapes all stacking contexts */
+.info-tooltip-body.info-tooltip-portal { position: fixed; opacity: 1; visibility: visible; z-index: 9999; }
+
 .tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -1364,13 +1454,25 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
 .speak-badge { background: #dcfce7; color: #15803d; }
 .empty-badge { background: var(--subtle-bg); color: var(--text-muted); }
 
+.system-event-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; }
+.system-event-line { flex: 1; height: 1px; background: var(--border); margin-top: 8px; flex-shrink: 1; }
+.system-event-content { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; max-width: 65%; }
+.system-event-label { font-style: italic; font-size: 11px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+.system-event-extras { display: flex; flex-direction: column; gap: 2px; font-family: monospace; font-size: 10px; width: 100%; }
+.system-event-kv { display: flex; gap: 8px; line-height: 1.4; }
+.system-event-k { color: var(--text-muted); flex-shrink: 0; font-weight: 600; }
+.system-event-v { word-break: break-all; opacity: 0.8; }
+.system-event-meta { font-size: 10px; color: var(--text-muted); opacity: 0.7; display: flex; align-items: center; gap: 4px; }
+.system-event-action-id { font-family: monospace; font-size: 9px; }
+
 /* ─── Execution Path ─────────────────────────────────────────────────────── */
 
 .exec-path { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
 
 .exec-path-toolbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   align-items: center;
   gap: 12px;
   margin-bottom: 8px;
@@ -1387,13 +1489,23 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
 }
 .exec-toolbar-btn:hover { background: var(--accent-subtle); }
 
-.topic-group { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.exec-path-legend { display: flex; align-items: center; gap: 14px; }
+.legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); user-select: none; }
 
-.topic-group.interrupted { opacity: 0.5; }
+.topic-group { border: 1px solid var(--border); border-radius: 8px; overflow: visible; position: relative; }
+
+/* Apply dimming to children, not the group itself — opacity on the group creates a stacking context
+   that traps the tooltip's z-index and breaks :hover hit-testing against sibling cards. */
+.topic-group.interrupted:not(.tool-call) > .topic-node,
+.topic-group.interrupted:not(.tool-call) > .action-list { opacity: 0.5; }
 .topic-group.interrupted .topic-node { cursor: default; }
+.topic-group.interrupted.tool-call { border-color: var(--success-border); }
+.topic-group.interrupted.tool-call .topic-node { cursor: pointer; }
+.topic-group.interrupted.tool-call .topic-node.interrupted { cursor: pointer; }
+.topic-group.has-deps { border-color: var(--success-border); }
 
 .inv-label { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-left: 4px; }
-.interrupted-badge { background: var(--subtle-bg); color: var(--text-muted); font-style: italic; }
+.interrupted-badge { background: var(--subtle-bg); color: var(--text-muted); font-style: italic; display: inline-flex; align-items: center; gap: 4px; }
 
 .topic-node {
   display: flex;
@@ -1409,7 +1521,10 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
   cursor: pointer;
   user-select: none;
   transition: background 0.1s;
+  border-radius: 7px 7px 0 0;
 }
+/* Standalone interrupted nodes (only child — no action-list below) get all corners rounded */
+.topic-group.interrupted > .topic-node { border-radius: 7px; }
 .topic-node:hover { background: var(--subtle-bg); }
 .topic-node:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .topic-node.interrupted {
@@ -1421,7 +1536,8 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
 .action-count { font-size: 11px; color: var(--text-muted); background: var(--bg); padding: 2px 8px; border-radius: 10px; }
 .topic-duration { color: var(--accent); font-weight: 600; }
 
-.action-list { border-top: 1px solid var(--border); background: var(--surface); }
+.action-list { border-top: 1px solid var(--border); background: var(--surface); border-radius: 0 0 7px 7px; overflow: hidden; }
+.action-list.interrupted-deps { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
 
 .action-node {
   display: flex;
@@ -1438,12 +1554,39 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
   border-left: 3px solid var(--warning);
   padding-left: 25px;
 }
+.action-node.has-deps {
+  border-left: 3px solid var(--success);
+  padding-left: 25px;
+}
+.action-node.has-deps.highlighted {
+  border-left-color: var(--warning);
+}
 
 .action-node-header {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.activity-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f97316;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.dep-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .action-kind {
@@ -1484,6 +1627,20 @@ body { background: var(--bg); height: 100vh; overflow: hidden; }
 .action-related-events { margin: 6px 0; border-top: 1px solid var(--border); padding-top: 6px; display: flex; flex-direction: column; gap: 4px; }
 .action-related-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
 .related-event-row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; font-size: 11px; }
+.related-event-row.bot-activity { background: var(--accent-subtle); border-left: 2px solid var(--accent); padding: 2px 6px; border-radius: 0 4px 4px 0; margin-left: -6px; }
+.related-event-row.bot-activity .related-event-name { font-style: italic; }
+.related-event-row.dep-event { background: var(--success-bg); border-left: 3px solid var(--success); padding: 4px 8px; border-radius: 0 6px 6px 0; margin-left: -6px; gap: 8px; }
+.related-event-row.dep-event.dep-failed { border-left-color: var(--error); background: var(--error-bg); }
+.dep-icon { font-style: normal !important; color: var(--success) !important; font-size: 12px !important; }
+.related-event-row.dep-event.dep-failed .dep-icon { color: var(--error) !important; }
+.dep-label { font-family: monospace; font-weight: 600 !important; background: none !important; color: var(--text) !important; padding: 0 !important; font-size: 12px !important; }
+.dep-status-fail { color: var(--error) !important; font-weight: 600 !important; }
+.dep-data { max-width: 100%; }
+.dep-data .related-event-v { max-width: 400px; }
+.related-event-row.custom-telemetry { background: var(--accent-subtle); border-left: 2px solid var(--text-muted); padding: 3px 6px; border-radius: 0 4px 4px 0; margin-left: -6px; flex-direction: column; align-items: flex-start; gap: 2px; }
+.custom-telemetry-name { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; background: none !important; color: var(--text-muted) !important; padding: 0 !important; }
+.custom-telemetry .related-event-kv { flex-wrap: wrap; }
+.custom-telemetry .related-event-v { max-width: 500px; white-space: pre-wrap; }
 .related-event-name { font-weight: 600; background: var(--event-name-bg); color: var(--accent); padding: 1px 6px; border-radius: 4px; flex-shrink: 0; }
 .related-event-kv { display: flex; gap: 3px; align-items: baseline; min-width: 0; }
 .related-event-k { color: var(--text-muted); font-size: 10px; white-space: nowrap; }
